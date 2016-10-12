@@ -10,8 +10,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
+import * as Progress from 'react-native-progress';
 
 export default class KondoCapitalism extends Component {
   constructor(props){
@@ -159,35 +161,33 @@ export default class KondoCapitalism extends Component {
     }
   }
   componentDidMount(){
-    setInterval(()=>{
-      // ßßconsole.log(cuadros++);
+    let interval = setInterval(()=>{
       var stands = this.state.buyedStand
       Object.keys(stands).map((key)=>{
         if (stands[key].initTime !== 0){
           // Do what ever operation you need...
           var tiempoActual = Date.now()
           var tiempoTranscurrido = tiempoActual - stands[key].initTime;
-          var porcentaje = tiempoTranscurrido / stands[key].time * 100
-          if(stands[key].width >= 100){
+          var porcentaje = tiempoTranscurrido / stands[key].time
+          if(stands[key].width >= 1.1){
             stands[key].width = 0
             stands[key].initTime = 0
             stands[key].running = !stands[key].running
             this.setState({buyedStand:stands})
             this.sumCapital(stands[key].revenue)
           }else{
-            var percent = Math.floor(porcentaje)
-            percent = (percent > 100)? 100:percent;
-            stands[key].width = percent
+            console.log(porcentaje);
+            stands[key].width = porcentaje
             this.setState({buyedStand:stands})
           }
         }
       })
-    },1000/30)
-
+    }, 1000/30)
   }
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
+
         <MainContainer
           addStand={this.addStand}
           capital={this.state.capital}
@@ -196,7 +196,7 @@ export default class KondoCapitalism extends Component {
           loading={this.loading}
           buyStand={this.buyStand}
         />
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -205,10 +205,9 @@ class MainContainer extends Component{
   renderItemsGame(){
     var buyedStand = this.props.buyedStand
     return(
-      Object.keys(buyedStand).map( (item, key) => {
-        return(
-          <GameItem
-            key={key}
+      Object.keys(buyedStand).map((item, key)=>{
+        return (
+          <GameItem key={key}
             revenue={buyedStand[item].revenue}
             quantity={buyedStand[item].quantityStand}
             time={buyedStand[item].time}
@@ -220,16 +219,16 @@ class MainContainer extends Component{
             loading={this.props.loading}
           />
         )
-      }
+      })
     )
-  )
   }
   renderItemsAvailable(){
     var availableStand = this.props.availableStand
     return(
-      Object.keys(availableStand).map((item, key)=>{
-        return (
-          <NewStand key={key}
+      Object.keys(availableStand).map((item, key) =>{
+        return(
+          <AvailableStand
+            key={key}
             revenue={availableStand[item].revenue}
             quantity={availableStand[item].quantityStand}
             time={availableStand[item].time}
@@ -246,13 +245,9 @@ class MainContainer extends Component{
   render(){
     return(
       <View>
-        <Capital monto={this.props.capital}/>
-        <View style={styles.row}>
-          {this.renderItemsGame()}
-        </View>
-        <View>
-          {this.renderItemsAvailable()}
-        </View>
+        <Capital capital={this.props.capital}/>
+        {this.renderItemsGame()}
+        {this.renderItemsAvailable()}
       </View>
     )
   }
@@ -261,8 +256,8 @@ class MainContainer extends Component{
 class GameItem extends Component{
   render(){
     return(
-      <View>
-        <View style={styles.rowContainer}>
+      <View style={{borderWidth:1, borderColor: 'blue'}}>
+        <View style={styles.row}>
           <BarProgress
             width={this.props.width}
             revenue={this.props.revenue}
@@ -275,36 +270,34 @@ class GameItem extends Component{
             name={this.props.name}
             quantity={this.props.quantity}
             loading={this.props.loading}
-            time={this.props.time}
           />
         </View>
         <RevenueBuyStandContainer
           name={this.props.name}
-          revenue={this.props.revenue}
           standPrice={this.props.standPrice}
           addStand={this.props.addStand}
+          revenue={this.props.revenue}
         />
       </View>
     )
   }
 }
 
+
 class BarProgress extends Component{
   render(){
-    var myBar ={
-      position: 'relative',
-      width: this.props.width,
-      height: 20,
+    let myBar = {
+      position:'absolute',
+      width:this.props.width,
+      height: 30,
       backgroundColor: 'green',
     }
-    return(
-      <View style={styles.progressBar}>
-        <View style={styles.myProgress} onClick={()=> {this.props.loading(this.props.name)}}>
-          <View style={myBar}></View>
-          <Text style={styles.label}>{this.props.time}</Text>
-        </View>
-      </View>
-    )
+    let name = this.props.name
+    return <Progress.Bar
+      progress={this.props.width}
+      width={290}
+      height={30}
+      onTouchStart={() => this.props.loading(name)} color='green'/>
   }
 }
 
@@ -312,7 +305,7 @@ class Capital extends Component{
   render(){
     return(
       <View>
-        <Text>${this.props.monto}</Text>
+        <Text style={{textAlign:'center'}}>${this.props.capital}</Text>
       </View>
     )
   }
@@ -320,11 +313,10 @@ class Capital extends Component{
 
 class Thumbnail extends Component{
   render(){
-    var name = this.props.name
     return(
-      <View style={styles.thumb} onClick={() => this.props.loading(name)}>
-        <Image source={{uri: 'http://placehold.it/50x50'}} style={{borderRadius: 25}} />
-        <Text style={styles.quantity}>{this.props.quantity}</Text>
+      <View onTouchStart={() => this.props.loading(this.props.name)}>
+        <Image style={{borderRadius:25}} source={require('./assets/images/place.png')}/>
+        <Text style={{textAlign:'center'}}>{this.props.quantity}</Text>
       </View>
     )
   }
@@ -333,9 +325,15 @@ class Thumbnail extends Component{
 class RevenueBuyStandContainer extends Component{
   render(){
     return(
-      <View style={styles.rev}>
-        <BuyStand addStand={this.props.addStand} name={this.props.name} standPrice={this.props.standPrice} />
-        <Revenue revenue={this.props.revenue} />
+      <View style={styles.row}>
+        <BuyStand
+          addStand={this.props.addStand}
+          name={this.props.name}
+          standPrice={this.props.standPrice}
+        />
+        <Revenue
+          revenue={this.props.revenue}
+        />
       </View>
     )
   }
@@ -345,7 +343,7 @@ class Revenue extends Component{
   render(){
     return(
       <View>
-        <Text  style={styles.revenue}>${this.props.revenue}</Text>
+        <Text>${this.props.revenue}</Text>
       </View>
     )
   }
@@ -354,7 +352,7 @@ class Revenue extends Component{
 class BuyStand extends Component{
   render(){
     return(
-      <View style={styles.buystand} onClick={() => {this.props.addStand(this.props.name)}}>
+      <View onTouchStart={() => this.props.addStand(this.props.name)}>
         <Text>Buy x1</Text>
         <Text>${this.props.standPrice}</Text>
       </View>
@@ -362,16 +360,16 @@ class BuyStand extends Component{
   }
 }
 
-class NewStand extends Component{
+class AvailableStand extends Component{
   render(){
-    var capital = this.props.capital
-    var newStandPrice = this.props.newStandPrice
     return(
-      <View onClick={() => this.props.buystand(this.props.name)}>
-        <Image source={{uri:'http://placehold.it/50x50'}}/>
+      <View style={styles.availableStand} onTouchStart={() => this.props.buyStand(this.props.name)}>
+        <Image
+          style={{borderRadius: 25}}
+          source={require('./assets/images/place.png')} />
         <View>
           <Text>{this.props.name}</Text>
-          <Text>${newStandPrice}</Text>
+          <Text>${this.props.newStandPrice}</Text>
         </View>
       </View>
     )
@@ -380,13 +378,13 @@ class NewStand extends Component{
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex:1,
+    marginTop:20,
     backgroundColor: '#F5FCFF',
   },
   myProgress:{
     position: 'relative',
-    width: 200,
+    width: 300,
     height: 30,
     backgroundColor: 'lightgray',
   },
@@ -395,44 +393,24 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: 'black',
   },
-  thumb:{
-    justifyContent:'flex-start'
-  },
-  quantity:{
-    backgroundColor: 'cornflowerblue',
-    textAlign: 'center',
-  },
-  buystand:{
-    borderWidth:1,
-    borderColor: 'red',
-    padding: 5,
-  },
-  rev:{
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-  },
-  revenue:{
-    position: 'relative',
-    top: 5,
-  },
-  rowContainer:{
-    justifyContent: 'flex-end',
-  },
   progressBar:{
     position: 'relative',
     width: 100,
     top: 15,
   },
-  newstand:{
-    marginTop: 10,
-    alignItems: 'center',
-    backgroundColor: '#6d6d6d',
-    opacity: 0.5,
-    color: 'white',
+  row:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'space-around',
+    alignItems:'center'
   },
-  newstandImg:{
-    borderRadius: 25,
-    marginRight:50
+  availableStand:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'space-around',
+    alignItems:'center',
+    borderColor:'red',
+    borderWidth: 1,
   }
 });
 
