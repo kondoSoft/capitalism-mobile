@@ -11,7 +11,8 @@ import {
   Text,
   View,
   Image,
-  ScrollView
+  ScrollView,
+  Animated
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 
@@ -22,8 +23,7 @@ export default class KondoCapitalism extends Component {
       buyedStand:{
         lemonade:{
           name: 'lemonade',
-          revenue:200
-          ,
+          revenue:200,
           standPrice:200,
           quantityStand:1,
           time:500,
@@ -92,7 +92,7 @@ export default class KondoCapitalism extends Component {
           width: 0,
           running: false,
           indexRevenue: 1.8,
-          newStandPrice:4200,
+          newStandPrice:4000,
           initTime: 0
         },
         oilCompany:{
@@ -104,7 +104,7 @@ export default class KondoCapitalism extends Component {
           width: 0,
           running: false,
           indexRevenue: 1.8,
-          newStandPrice:10000,
+          newStandPrice:43000,
           initTime: 0
         }
       },
@@ -138,7 +138,6 @@ export default class KondoCapitalism extends Component {
     }
   }
   loading(key){
-    console.log('Hiciste click');
     var state = this.state
     if (state.buyedStand[key].running === false) {
       var initTime = Date.now()
@@ -161,7 +160,7 @@ export default class KondoCapitalism extends Component {
     }
   }
   componentDidMount(){
-    let interval = setInterval(()=>{
+    setInterval(()=>{
       var stands = this.state.buyedStand
       Object.keys(stands).map((key)=>{
         if (stands[key].initTime !== 0){
@@ -169,7 +168,7 @@ export default class KondoCapitalism extends Component {
           var tiempoActual = Date.now()
           var tiempoTranscurrido = tiempoActual - stands[key].initTime;
           var porcentaje = tiempoTranscurrido / stands[key].time
-          if(stands[key].width >= 1.1){
+          if(stands[key].width >= 1){
             stands[key].width = 0
             stands[key].initTime = 0
             stands[key].running = !stands[key].running
@@ -187,7 +186,6 @@ export default class KondoCapitalism extends Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-
         <MainContainer
           addStand={this.addStand}
           capital={this.state.capital}
@@ -245,7 +243,7 @@ class MainContainer extends Component{
   render(){
     return(
       <View>
-        <Capital capital={this.props.capital}/>
+        <AvatarCapitalContainer capital={this.props.capital} />
         {this.renderItemsGame()}
         {this.renderItemsAvailable()}
       </View>
@@ -256,7 +254,7 @@ class MainContainer extends Component{
 class GameItem extends Component{
   render(){
     return(
-      <View style={{borderWidth:1, borderColor: 'blue'}}>
+      <View>
         <View style={styles.row}>
           <BarProgress
             width={this.props.width}
@@ -277,6 +275,7 @@ class GameItem extends Component{
           standPrice={this.props.standPrice}
           addStand={this.props.addStand}
           revenue={this.props.revenue}
+          capital={this.props.capital}
         />
       </View>
     )
@@ -286,18 +285,28 @@ class GameItem extends Component{
 
 class BarProgress extends Component{
   render(){
-    let myBar = {
-      position:'absolute',
-      width:this.props.width,
-      height: 30,
-      backgroundColor: 'green',
-    }
     let name = this.props.name
-    return <Progress.Bar
-      progress={this.props.width}
-      width={290}
-      height={30}
-      onTouchStart={() => this.props.loading(name)} color='green'/>
+    return (
+      <Progress.Bar
+        progress={this.props.width}
+        width={290}
+        height={30}
+        onTouchStart={() => this.props.loading(name)}
+        color='green'
+        animated={false}
+      />
+    )
+  }
+}
+
+class AvatarCapitalContainer extends Component{
+  render(){
+    return(
+      <View style={styles.capitalContainer}>
+        <Avatar />
+        <Capital capital={this.props.capital}/>
+      </View>
+    )
   }
 }
 
@@ -305,7 +314,37 @@ class Capital extends Component{
   render(){
     return(
       <View>
-        <Text style={{textAlign:'center'}}>${this.props.capital}</Text>
+        <Text style={{marginLeft:20, fontSize:22, fontWeight:'200'}}>${this.props.capital}</Text>
+      </View>
+    )
+  }
+}
+
+class Avatar extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      bounceValue: new Animated.Value(0),
+    }
+  }
+  componentDidMount(){
+    this.state.bounceValue.setValue(100);
+    Animated.spring(
+      this.state.bounceValue,
+      {
+        toValue: 0.8,
+        friction:1,
+      }
+    ).start()
+  }
+  render(){
+    return(
+      <View>
+        <Animated.Image
+          source={require('./assets/images/place.png')}
+          style={{flex:1, transform:[{translateX:this.state.bounceValue}]}}
+        />
+        {/* <Image style={{marginLeft:5, borderRadius:5}} source={require('./assets/images/place.png')}/> */}
       </View>
     )
   }
@@ -316,7 +355,7 @@ class Thumbnail extends Component{
     return(
       <View onTouchStart={() => this.props.loading(this.props.name)}>
         <Image style={{borderRadius:25}} source={require('./assets/images/place.png')}/>
-        <Text style={{textAlign:'center'}}>{this.props.quantity}</Text>
+        <Text style={styles.thumb}>{this.props.quantity}</Text>
       </View>
     )
   }
@@ -330,6 +369,7 @@ class RevenueBuyStandContainer extends Component{
           addStand={this.props.addStand}
           name={this.props.name}
           standPrice={this.props.standPrice}
+          capital={this.props.capital}
         />
         <Revenue
           revenue={this.props.revenue}
@@ -351,10 +391,13 @@ class Revenue extends Component{
 
 class BuyStand extends Component{
   render(){
+    var capital = this.props.capital
+    var standPrice = this.props.standPrice
+    var available = (capital >= standPrice)? styles.standAvailable: styles.buyStand;
     return(
-      <View onTouchStart={() => this.props.addStand(this.props.name)}>
+      <View style={available} onTouchStart={() => this.props.addStand(this.props.name)}>
         <Text>Buy x1</Text>
-        <Text>${this.props.standPrice}</Text>
+        <Text>${standPrice}</Text>
       </View>
     )
   }
@@ -362,14 +405,17 @@ class BuyStand extends Component{
 
 class AvailableStand extends Component{
   render(){
+    var capital = this.props.capital
+    var newStandPrice = this.props.newStandPrice
+    var available = (capital >= newStandPrice)? styles.availableBuyStand: styles.availableStand;
     return(
-      <View style={styles.availableStand} onTouchStart={() => this.props.buyStand(this.props.name)}>
+      <View style={available} onTouchStart={() => this.props.buyStand(this.props.name)}>
         <Image
           style={{borderRadius: 25}}
           source={require('./assets/images/place.png')} />
         <View>
           <Text>{this.props.name}</Text>
-          <Text>${this.props.newStandPrice}</Text>
+          <Text>${newStandPrice}</Text>
         </View>
       </View>
     )
@@ -382,22 +428,6 @@ const styles = StyleSheet.create({
     marginTop:20,
     backgroundColor: '#F5FCFF',
   },
-  myProgress:{
-    position: 'relative',
-    width: 300,
-    height: 30,
-    backgroundColor: 'lightgray',
-  },
-  label:{
-    textAlign: 'center',
-    lineHeight: 30,
-    color: 'black',
-  },
-  progressBar:{
-    position: 'relative',
-    width: 100,
-    top: 15,
-  },
   row:{
     flex:1,
     flexDirection:'row',
@@ -409,8 +439,36 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     justifyContent:'space-around',
     alignItems:'center',
-    borderColor:'red',
-    borderWidth: 1,
+    marginTop:10,
+    backgroundColor:'gray',
+    opacity: 0.3
+  },
+  availableBuyStand:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'space-around',
+    alignItems:'center',
+    marginTop:10,
+    backgroundColor:'#f44336',
+    opacity:1
+  },
+  thumb:{
+    backgroundColor:'cornflowerblue',
+    textAlign:'center'
+  },
+  buyStand:{
+    backgroundColor:'lightgray',
+    opacity:0.3
+  },
+  standAvailable:{
+    backgroundColor:'lightblue',
+    opacity:1
+  },
+  capitalContainer:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'flex-start',
+    alignItems:'flex-start'
   }
 });
 
