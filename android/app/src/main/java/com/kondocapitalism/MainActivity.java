@@ -1,6 +1,7 @@
 package com.kondocapitalism;
 
 import com.facebook.react.ReactActivity;
+import com.zmxv.RNSound.RNSoundPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -12,4 +13,13 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "KondoCapitalism";
     }
+    @Override
+ protected List<ReactPackage> getPackages() {
+   return Arrays.<ReactPackage>asList(
+       new MainReactPackage(),
+            new RNSoundPackage(),
+       new RNSoundPackage() // <-- New
+   );
+ }
+
 }

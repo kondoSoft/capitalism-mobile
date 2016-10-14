@@ -3,7 +3,6 @@
 * https://github.com/facebook/react-native
 * @flow
 */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -26,7 +25,7 @@ export default class KondoCapitalism extends Component {
           revenue:200,
           standPrice:200,
           quantityStand:1,
-          time:500,
+          time:1000,
           width: 0,
           running: false,
           indexRevenue: 1.2,
@@ -104,7 +103,7 @@ export default class KondoCapitalism extends Component {
           width: 0,
           running: false,
           indexRevenue: 1.8,
-          newStandPrice:43000,
+          newStandPrice:4300,
           initTime: 0
         }
       },
@@ -339,11 +338,16 @@ class Avatar extends Component{
   }
   render(){
     return(
-      <View>
+      <View style={styles.row}>
         <Animated.Image
           source={require('./assets/images/place.png')}
-          style={{flex:1, transform:[{translateX:this.state.bounceValue}]}}
+          style={{transform:[{translateX:this.state.bounceValue}]}}
         />
+        <View style={styles.row}>
+          <Text>icon</Text>
+          <Text>icon</Text>
+          <Text>icon</Text>
+        </View>
         {/* <Image style={{marginLeft:5, borderRadius:5}} source={require('./assets/images/place.png')}/> */}
       </View>
     )
