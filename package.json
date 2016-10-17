@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "15.3.2",
     "react-native": "0.35.0",
+    "react-native-animatable": "^0.6.1",
     "react-native-progress": "^3.1.0",
     "react-native-simple-sound": "^1.0.0",
     "react-native-sound": "^0.8.3"

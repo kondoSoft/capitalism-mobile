@@ -14,6 +14,16 @@ import {
   Animated
 } from 'react-native';
 import * as Progress from 'react-native-progress';
+import * as Animatable from 'react-native-animatable';
+import {default as Sound} from 'react-native-sound'
+var music = new Sound('level1-step3-evil.wav', Sound.MAIN_BUNDLE, (error) => {
+  if(error){
+    console.log('Fallo al cargar el audio', error);
+  }else{
+    console.log('Duracion en segundos: ' + music.getDuration());
+  }
+})
+
 
 export default class KondoCapitalism extends Component {
   constructor(props){
@@ -159,6 +169,14 @@ export default class KondoCapitalism extends Component {
     }
   }
   componentDidMount(){
+    var playBackgroundAudio = setInterval(() => {
+      if (music.isLoaded()) {
+        music.setNumberOfLoops(-1)
+        // music.play()
+        clearInterval(playBackgroundAudio)
+      }
+    },10)
+
     setInterval(()=>{
       var stands = this.state.buyedStand
       Object.keys(stands).map((key)=>{
@@ -299,11 +317,49 @@ class BarProgress extends Component{
 }
 
 class AvatarCapitalContainer extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      playing: true,
+      open:true,
+      animation: 'null',
+      menu: false,
+      flexValue:5
+    }
+    this.openCloseMenu = this.openCloseMenu.bind(this)
+    this.playPause = this.playPause.bind(this)
+  }
+  openCloseMenu(){
+    if(this.state.menu){
+      this.setState({menu:false})
+      this.setState({flexValue:5})
+      this.setState({animation:'fadeOutLeft'})
+    }else {
+      this.setState({menu: true})
+      this.setState({flexValue:null})
+      this.setState({animation:'fadeInLeft'})
+    }
+  }
+  playPause(){
+    var playing = this.state.playing
+    if (playing == true) {
+      music.pause()
+      this.state.playing = !playing
+    }else {
+      music.play()
+      this.state.playing = !playing
+    }
+  }
   render(){
     return(
       <View style={styles.capitalContainer}>
-        <Avatar />
-        <Capital capital={this.props.capital}/>
+        <Avatar
+          openCloseMenu={this.openCloseMenu}
+          menu={this.state.menu}
+          playPause={this.playPause}
+          animation={this.state.animation}
+        />
+        <Capital capital={this.props.capital} flexValue={this.state.flexValue}/>
       </View>
     )
   }
@@ -312,44 +368,38 @@ class AvatarCapitalContainer extends Component{
 class Capital extends Component{
   render(){
     return(
-      <View>
-        <Text style={{marginLeft:20, fontSize:22, fontWeight:'200'}}>${this.props.capital}</Text>
+      <View style={{flex:this.props.flexValue}}>
+        <Text style={{fontSize:22, fontWeight:'200'}}>${this.props.capital}</Text>
       </View>
     )
   }
 }
 
 class Avatar extends Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      bounceValue: new Animated.Value(0),
-    }
-  }
-  componentDidMount(){
-    this.state.bounceValue.setValue(100);
-    Animated.spring(
-      this.state.bounceValue,
-      {
-        toValue: 0.8,
-        friction:1,
-      }
-    ).start()
-  }
   render(){
     return(
-      <View style={styles.row}>
-        <Animated.Image
+      <View style={styles.rowMenu}>
+        <Image
+          style={{marginLeft:5, borderRadius:5}}
           source={require('./assets/images/place.png')}
-          style={{transform:[{translateX:this.state.bounceValue}]}}
+          onTouchStart={()=> this.props.openCloseMenu()}
         />
-        <View style={styles.row}>
-          <Text>icon</Text>
-          <Text>icon</Text>
-          <Text>icon</Text>
-        </View>
-        {/* <Image style={{marginLeft:5, borderRadius:5}} source={require('./assets/images/place.png')}/> */}
+        {this.props.menu? <Menu
+          animation={this.props.animation}
+          playPause={this.props.playPause}/> : null}
       </View>
+    )
+  }
+}
+
+class Menu extends Component{
+  render(){
+    return(
+      <Animatable.View animation={this.props.animation} style={styles.row}>
+        <Text onTouchStart={this.props.playPause}>Mute audio</Text>
+        <Text>icon</Text>
+        <Text>icon</Text>
+      </Animatable.View>
     )
   }
 }
@@ -472,7 +522,13 @@ const styles = StyleSheet.create({
     flex:1,
     flexDirection:'row',
     justifyContent:'flex-start',
-    alignItems:'flex-start'
+    alignItems:'center'
+  },
+  rowMenu:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'flex-start',
+    alignItems:'center'
   }
 });
 
