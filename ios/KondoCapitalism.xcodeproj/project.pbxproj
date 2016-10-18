@@ -30,8 +30,8 @@
 		B6E1DE3D1DB18CA800BAAA25 /* level1-step3-evil.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6E1DE3C1DB18CA800BAAA25 /* level1-step3-evil.wav */; };
 		B6F04B791DB6B3A8000BA675 /* Coin01.aif in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B761DB6B305000BA675 /* Coin01.aif */; };
 		B6F04B7A1DB6B3B5000BA675 /* Coin01.aif in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B761DB6B305000BA675 /* Coin01.aif */; };
-		B6F04B7C1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
-		B6F04B7D1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
+		B6F04B7E1DB6C1A2000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
+		B6F04B7F1DB6C1AE000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -550,10 +550,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6F04B7F1DB6C1AE000BA675 /* Menu-Selection-Click.wav in Resources */,
 				B6F04B7A1DB6B3B5000BA675 /* Coin01.aif in Resources */,
 				B688892D1DB52F5300C02ABB /* level1-step3-evil.wav in Resources */,
 				B68889331DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 in Resources */,
-				B6F04B7D1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,10 +561,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6F04B7E1DB6C1A2000BA675 /* Menu-Selection-Click.wav in Resources */,
 				B6F04B791DB6B3A8000BA675 /* Coin01.aif in Resources */,
 				B6E1DE3D1DB18CA800BAAA25 /* level1-step3-evil.wav in Resources */,
 				B68889321DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 in Resources */,
-				B6F04B7C1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
