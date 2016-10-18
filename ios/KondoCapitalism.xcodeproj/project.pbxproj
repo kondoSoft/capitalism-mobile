@@ -30,6 +30,8 @@
 		B6E1DE3D1DB18CA800BAAA25 /* level1-step3-evil.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6E1DE3C1DB18CA800BAAA25 /* level1-step3-evil.wav */; };
 		B6F04B791DB6B3A8000BA675 /* Coin01.aif in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B761DB6B305000BA675 /* Coin01.aif */; };
 		B6F04B7A1DB6B3B5000BA675 /* Coin01.aif in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B761DB6B305000BA675 /* Coin01.aif */; };
+		B6F04B7C1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
+		B6F04B7D1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +147,7 @@
 		B68889311DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "GunsNRoses-NovemberRain.mp3"; path = "../assets/loops/GunsNRoses-NovemberRain.mp3"; sourceTree = "<group>"; };
 		B6E1DE3C1DB18CA800BAAA25 /* level1-step3-evil.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "level1-step3-evil.wav"; path = "../assets/loops/level1-step3-evil.wav"; sourceTree = "<group>"; };
 		B6F04B761DB6B305000BA675 /* Coin01.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = Coin01.aif; path = ../assets/loops/Coin01.aif; sourceTree = "<group>"; };
+		B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "Menu-Selection-Click.wav"; path = "../assets/loops/Menu-Selection-Click.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,6 +312,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				B6F04B7B1DB6C0D3000BA675 /* Menu-Selection-Click.wav */,
 				B68889311DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 */,
 				B6E1DE3C1DB18CA800BAAA25 /* level1-step3-evil.wav */,
 				B6F04B761DB6B305000BA675 /* Coin01.aif */,
@@ -549,6 +553,7 @@
 				B6F04B7A1DB6B3B5000BA675 /* Coin01.aif in Resources */,
 				B688892D1DB52F5300C02ABB /* level1-step3-evil.wav in Resources */,
 				B68889331DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 in Resources */,
+				B6F04B7D1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -559,6 +564,7 @@
 				B6F04B791DB6B3A8000BA675 /* Coin01.aif in Resources */,
 				B6E1DE3D1DB18CA800BAAA25 /* level1-step3-evil.wav in Resources */,
 				B68889321DB5325800C02ABB /* GunsNRoses-NovemberRain.mp3 in Resources */,
+				B6F04B7C1DB6C0D3000BA675 /* Menu-Selection-Click.wav in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
