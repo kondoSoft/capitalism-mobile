@@ -11,19 +11,21 @@ import {
   View,
   Image,
   ScrollView,
-  Animated
+  Animated,
+  Easing
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import * as Animatable from 'react-native-animatable';
 import {default as Sound} from 'react-native-sound'
 var music = new Sound('level1-step3-evil.wav', Sound.MAIN_BUNDLE, (error) => {
-  if(error){
-    console.log('Fallo al cargar el audio', error);
-  }else{
-    console.log('Duracion en segundos: ' + music.getDuration());
-  }
+  if(error) console.log('Fallo al cargar el audio', error);
 })
-
+var coin = new Sound('Coin01.aif', Sound.MAIN_BUNDLE, (error) => {
+  if(error) console.log('Fallo al cargar el audio', error);
+})
+var click = new Sound('Menu-Selection-Click.wav', Sound.MAIN_BUNDLE, (error) => {
+  if(error) console.log('Fallo al cargar el audio', error);
+})
 
 export default class KondoCapitalism extends Component {
   constructor(props){
@@ -128,6 +130,7 @@ export default class KondoCapitalism extends Component {
     this.setState({capital: total})
   }
   addStand(name) {
+    click.play()
     console.log('Hiciste click');
     var state = this.state
     var buyedStand = state.buyedStand
@@ -147,6 +150,8 @@ export default class KondoCapitalism extends Component {
     }
   }
   loading(key){
+    click.play()
+    coin.stop()
     var state = this.state
     if (state.buyedStand[key].running === false) {
       var initTime = Date.now()
@@ -155,6 +160,7 @@ export default class KondoCapitalism extends Component {
     }
   }
   buyStand(key){
+    click.play()
     var state = this.state
     var availableStand = state.availableStand
     var buyedStand = state.buyedStand
@@ -171,8 +177,9 @@ export default class KondoCapitalism extends Component {
   componentDidMount(){
     var playBackgroundAudio = setInterval(() => {
       if (music.isLoaded()) {
+        music.setVolume(0.5)
         music.setNumberOfLoops(-1)
-        // music.play()
+        music.play()
         clearInterval(playBackgroundAudio)
       }
     },10)
@@ -191,6 +198,7 @@ export default class KondoCapitalism extends Component {
             stands[key].running = !stands[key].running
             this.setState({buyedStand:stands})
             this.sumCapital(stands[key].revenue)
+            coin.play()
           }else{
             console.log(porcentaje);
             stands[key].width = porcentaje
@@ -320,34 +328,52 @@ class AvatarCapitalContainer extends Component{
   constructor(props){
     super(props);
     this.state = {
-      playing: true,
-      open:true,
+      isPlaying: true,
+      isOpen:false,
       animation: 'null',
-      menu: false,
-      flexValue:5
+      flexValue: new Animated.Value(5),
+      initMenu:false
     }
     this.openCloseMenu = this.openCloseMenu.bind(this)
     this.playPause = this.playPause.bind(this)
   }
   openCloseMenu(){
-    if(this.state.menu){
-      this.setState({menu:false})
-      this.setState({flexValue:5})
+    if(this.state.isOpen){
+      this.setState({isOpen:false})
       this.setState({animation:'fadeOutLeft'})
     }else {
-      this.setState({menu: true})
-      this.setState({flexValue:null})
+      this.setState({isOpen: true})
       this.setState({animation:'fadeInLeft'})
+      this.setState({initMenu:true})
+    }
+    if (this.state.flexValue._value == 5) {
+      Animated.timing(
+        this.state.flexValue,
+        {
+          toValue: null,
+          duration:650,
+          easing:Easing.linear
+        }
+      ).start();
+    }else {
+      Animated.timing(
+        this.state.flexValue,
+        {
+          toValue: 5,
+          duration:620,
+          easing:Easing.linear
+        }
+      ).start();
     }
   }
   playPause(){
-    var playing = this.state.playing
+    var playing = this.state.isPlaying
     if (playing == true) {
       music.pause()
-      this.state.playing = !playing
+      this.state.isPlaying = !playing
     }else {
       music.play()
-      this.state.playing = !playing
+      this.state.isPlaying = !playing
     }
   }
   render(){
@@ -355,9 +381,10 @@ class AvatarCapitalContainer extends Component{
       <View style={styles.capitalContainer}>
         <Avatar
           openCloseMenu={this.openCloseMenu}
-          menu={this.state.menu}
+          isOpen={this.state.isOpen}
           playPause={this.playPause}
           animation={this.state.animation}
+          initMenu={this.state.initMenu}
         />
         <Capital capital={this.props.capital} flexValue={this.state.flexValue}/>
       </View>
@@ -368,14 +395,19 @@ class AvatarCapitalContainer extends Component{
 class Capital extends Component{
   render(){
     return(
-      <View style={{flex:this.props.flexValue}}>
+      <Animatable.View ref="view" style={{flex:this.props.flexValue}}>
         <Text style={{fontSize:22, fontWeight:'200'}}>${this.props.capital}</Text>
-      </View>
+      </Animatable.View>
     )
   }
 }
 
 class Avatar extends Component{
+  renderMenu(){
+    if(this.props.initMenu){
+      return <Menu animation={this.props.animation} playPause={this.props.playPause} />
+    }
+  }
   render(){
     return(
       <View style={styles.rowMenu}>
@@ -384,9 +416,7 @@ class Avatar extends Component{
           source={require('./assets/images/place.png')}
           onTouchStart={()=> this.props.openCloseMenu()}
         />
-        {this.props.menu? <Menu
-          animation={this.props.animation}
-          playPause={this.props.playPause}/> : null}
+        {this.renderMenu()}
       </View>
     )
   }
